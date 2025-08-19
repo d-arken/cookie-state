@@ -1,6 +1,15 @@
 # Cookie State
 
+[![Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://cookie-state.vercel.app/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A minimal React library for state management using cookies with full TypeScript support.
+
+## 🚀 [**Live Demo**](https://cookie-state.vercel.app/)
+
+Try the interactive demo to see the library in action with real cookie storage, TypeScript support, and cross-domain functionality.
 
 ## Installation
 
@@ -9,6 +18,8 @@ npm install cookie-state
 ```
 
 ## Usage
+
+> 💡 **See it in action**: Check out the [**live demo**](https://cookie-state.vercel.app/) with interactive examples!
 
 ```tsx
 import { useCookieState, type CookieOptions } from 'cookie-state'
@@ -106,12 +117,22 @@ interface CookieOptions {
 # Install dependencies
 npm install
 
-# Start development
+# Start development server
 npm run dev
 
-# Build library
+# Build demo app 
 npm run build
+
+# Build library for npm
+npm run build:lib
+
+# Preview built demo
+npm run preview
 ```
+
+### 🔗 Links
+- **[Live Demo](https://cookie-state.vercel.app/)** - Interactive examples
+- **[GitHub Repository](https://github.com/d-arken/cookie-state)** - Source code
 
 ## License
 
