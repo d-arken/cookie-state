@@ -5,6 +5,10 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
+  const isLibBuild = mode === 'lib'
+  
+  if (isLibBuild) {
+    // Library build configuration
     return {
       plugins: [
         react(),
@@ -15,7 +19,7 @@ export default defineConfig(({ command, mode }) => {
       ],
       build: {
         lib: {
-          entry: resolve(__dirname, 'src/index.js'),
+          entry: resolve(__dirname, 'src/index.ts'),
           name: 'CookieState',
           formats: ['es', 'cjs'],
           fileName: (format) => `index.${format === 'es' ? 'es.js' : 'js'}`
@@ -29,6 +33,15 @@ export default defineConfig(({ command, mode }) => {
             }
           }
         }
+      }
+    }
+  } else {
+    // Demo app build configuration
+    return {
+      plugins: [react()],
+      base: './', // For GitHub Pages compatibility
+      build: {
+        outDir: 'dist'
       }
     }
   }

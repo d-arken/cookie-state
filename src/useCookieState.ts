@@ -1,34 +1,44 @@
 import { useState, useCallback } from "react";
 
+export interface CookieOptions {
+  days?: number;
+  domain?: string;
+  defaultDomain?: string;
+  path?: string;
+  secure?: boolean;
+  sameSite?: 'strict' | 'lax' | 'none';
+}
+
+export interface UseCookieStateResult<T = any> {
+  value: T;
+  getValue: () => T;
+  setValue: (updateFunction: (prev: T) => T) => void;
+  deleteValue: () => void;
+  error: boolean;
+  errorMessage: string | null;
+}
+
 /**
  * Get a cookie value by name
- * @param {string} name Cookie name
- * @returns {string|null} Cookie value or null if not found
  */
-const getCookie = (name) => {
+const getCookie = (name: string): string | null => {
   if (typeof document === "undefined") return null;
 
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) {
-    return parts.pop().split(";").shift();
+    const cookieValue = parts.pop();
+    if (cookieValue) {
+      return cookieValue.split(";").shift() || null;
+    }
   }
   return null;
 };
 
 /**
  * Set a cookie with the specified name, value, and options
- * @param {string} name Cookie name
- * @param {string} value Cookie value
- * @param {Object} options Cookie options
- * @param {number} options.days Expiration in days (default: 365)
- * @param {string} options.domain Cookie domain (default: no domain in dev, custom domain in production)
- * @param {string} options.defaultDomain Default domain for production (default: undefined)
- * @param {string} options.path Cookie path (default: '/')
- * @param {boolean} options.secure Use secure flag (default: true for production)
- * @param {string} options.sameSite SameSite attribute (default: 'Lax')
  */
-const setCookie = (name, value, options = {}) => {
+const setCookie = (name: string, value: string, options: CookieOptions = {}): void => {
   if (typeof document === "undefined") return;
 
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -36,7 +46,6 @@ const setCookie = (name, value, options = {}) => {
   const {
     days = 365,
     domain = isDevelopment ? undefined : options.defaultDomain, // Don't set domain for localhost
-    defaultDomain,
     path = "/",
     secure = window.location.protocol === "https:",
     sameSite = "Lax",
@@ -63,20 +72,14 @@ const setCookie = (name, value, options = {}) => {
 
 /**
  * Delete a cookie by setting it to expire in the past
- * @param {string} name Cookie name
- * @param {Object} options Cookie options
- * @param {string} options.domain Cookie domain (default: no domain in dev, custom domain in production)
- * @param {string} options.defaultDomain Default domain for production (default: undefined)
- * @param {string} options.path Cookie path (default: '/')
  */
-const deleteCookie = (name, options = {}) => {
+const deleteCookie = (name: string, options: CookieOptions = {}): void => {
   if (typeof document === "undefined") return;
 
   const isDevelopment = process.env.NODE_ENV === "development";
 
   const {
     domain = isDevelopment ? undefined : options.defaultDomain, // Don't set domain for localhost
-    defaultDomain,
     path = "/",
   } = options;
 
@@ -91,29 +94,8 @@ const deleteCookie = (name, options = {}) => {
 };
 
 /**
- * @typedef UseCookieStateResult
- * @property {*} value Current value of the cookie (parsed from JSON)
- * @property {function} setValue Function to update the cookie value (accepts only update functions)
- * @property {function} deleteValue Function to delete the cookie
- * @property {boolean} error Whether an error occurred during JSON parsing/stringifying
- * @property {string|null} errorMessage Error message if an error occurred
- */
-
-/**
  * React hook for storing and retrieving JSON objects in cookies with subdomain access
  * Uses function-only updates for safe state management and property preservation
- *
- * @param {string} cookieName Name of the cookie
- * @param {*} defaultValue Default value to return if cookie doesn't exist or parsing fails
- * @param {Object} cookieOptions Cookie options
- * @param {number} cookieOptions.days Expiration in days (default: 365)
- * @param {string} cookieOptions.domain Cookie domain (default: no domain in dev, defaultDomain in production)
- * @param {string} cookieOptions.defaultDomain Default domain for production (default: undefined)
- * @param {string} cookieOptions.path Cookie path (default: '/')
- * @param {boolean} cookieOptions.secure Use secure flag (default: auto-detect based on protocol)
- * @param {string} cookieOptions.sameSite SameSite attribute (default: 'Lax')
- *
- * @returns {UseCookieStateResult}
  *
  * @example
  * // Basic usage with custom domain
@@ -140,16 +122,16 @@ const deleteCookie = (name, options = {}) => {
  *   console.error('Cookie error:', errorMessage)
  * }
  */
-const useCookieState = (
-  cookieName,
-  defaultValue = null,
-  cookieOptions = {}
-) => {
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+const useCookieState = <T = any>(
+  cookieName: string,
+  defaultValue: T,
+  cookieOptions: CookieOptions = {}
+): UseCookieStateResult<T> => {
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Function to get the current value from cookie (without error handling for initialization)
-  const getInitialValue = useCallback(() => {
+  const getInitialValue = useCallback((): T => {
     try {
       const cookieValue = getCookie(cookieName);
       if (cookieValue === null) {
@@ -160,16 +142,17 @@ const useCookieState = (
       const parsed = JSON.parse(decodeURIComponent(cookieValue));
       return parsed;
     } catch (err) {
-      console.warn(`Error parsing cookie "${cookieName}":`, err.message);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.warn(`Error parsing cookie "${cookieName}":`, errorMessage);
       return defaultValue;
     }
   }, [cookieName, defaultValue]);
 
   // Initialize state with current cookie value
-  const [value, setValue] = useState(getInitialValue);
+  const [value, setValue] = useState<T>(getInitialValue);
 
   // Function to get the current value from cookie (with error handling)
-  const getValue = useCallback(() => {
+  const getValue = useCallback((): T => {
     try {
       setError(false);
       setErrorMessage(null);
@@ -183,16 +166,17 @@ const useCookieState = (
       const parsed = JSON.parse(decodeURIComponent(cookieValue));
       return parsed;
     } catch (err) {
-      console.warn(`Error parsing cookie "${cookieName}":`, err.message);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.warn(`Error parsing cookie "${cookieName}":`, errorMessage);
       setError(true);
-      setErrorMessage(err.message);
+      setErrorMessage(errorMessage);
       return defaultValue;
     }
   }, [cookieName, defaultValue, setError, setErrorMessage]);
 
   // Function to set cookie value (function updates only)
   const setCookieValue = useCallback(
-    (updateFunction) => {
+    (updateFunction: (prev: T) => T): void => {
       try {
         setError(false);
         setErrorMessage(null);
@@ -223,16 +207,17 @@ const useCookieState = (
         setCookie(cookieName, stringValue, cookieOptions);
         setValue(resolvedValue);
       } catch (err) {
-        console.error(`Error setting cookie "${cookieName}":`, err.message);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error(`Error setting cookie "${cookieName}":`, errorMessage);
         setError(true);
-        setErrorMessage(err.message);
+        setErrorMessage(errorMessage);
       }
     },
     [cookieName, cookieOptions, defaultValue, value, setError, setErrorMessage]
   );
 
   // Function to delete cookie
-  const deleteCookieValue = useCallback(() => {
+  const deleteCookieValue = useCallback((): void => {
     try {
       setError(false);
       setErrorMessage(null);
@@ -240,9 +225,10 @@ const useCookieState = (
       deleteCookie(cookieName, cookieOptions);
       setValue(defaultValue);
     } catch (err) {
-      console.error(`Error deleting cookie "${cookieName}":`, err.message);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error(`Error deleting cookie "${cookieName}":`, errorMessage);
       setError(true);
-      setErrorMessage(err.message);
+      setErrorMessage(errorMessage);
     }
   }, [cookieName, cookieOptions, defaultValue, setError, setErrorMessage]);
 

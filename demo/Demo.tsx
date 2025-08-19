@@ -1,5 +1,16 @@
-import React, { useState } from 'react'
-import { useCookieState } from '../src/index.js'
+import { useState } from 'react'
+import { useCookieState } from '../src/index'
+
+interface UserPreferences {
+  theme: 'light' | 'dark'
+  language: 'en' | 'es'
+  notifications: boolean
+}
+
+interface CartItem {
+  id: number
+  name: string
+}
 
 function Demo() {
   // Demo 1: Simple counter with custom domain
@@ -9,7 +20,7 @@ function Demo() {
     deleteValue: resetCount,
     error: countError,
     errorMessage: countErrorMessage
-  } = useCookieState('demo_count', 0, {
+  } = useCookieState<number>('demo_count', 0, {
     defaultDomain: '.example.com',
     days: 7
   })
@@ -21,7 +32,7 @@ function Demo() {
     deleteValue: resetUserPrefs,
     error: prefsError,
     errorMessage: prefsErrorMessage
-  } = useCookieState('user_preferences', {
+  } = useCookieState<UserPreferences>('user_preferences', {
     theme: 'light',
     language: 'en',
     notifications: true
@@ -37,22 +48,22 @@ function Demo() {
     deleteValue: clearCart,
     error: cartError,
     errorMessage: cartErrorMessage
-  } = useCookieState('shopping_cart', [], {
+  } = useCookieState<CartItem[]>('shopping_cart', [], {
     defaultDomain: '.shop.com',
     days: 30
   })
 
   // Local state for adding items to cart
-  const [newItem, setNewItem] = useState('')
+  const [newItem, setNewItem] = useState<string>('')
 
-  const addToCart = () => {
+  const addToCart = (): void => {
     if (newItem.trim()) {
       setCart(prev => [...prev, { id: Date.now(), name: newItem.trim() }])
       setNewItem('')
     }
   }
 
-  const removeFromCart = (itemId) => {
+  const removeFromCart = (itemId: number): void => {
     setCart(prev => prev.filter(item => item.id !== itemId))
   }
 
