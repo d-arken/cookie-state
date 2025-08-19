@@ -19,11 +19,11 @@ function Demo() {
     setValue: setCount,
     deleteValue: resetCount,
     error: countError,
-    errorMessage: countErrorMessage
-  } = useCookieState<number>('demo_count', 0, {
-    defaultDomain: '.example.com',
-    days: 7
-  })
+    errorMessage: countErrorMessage,
+  } = useCookieState<number>("demo_count", 0, {
+    defaultDomain: "cookie-state.vercel.app",
+    days: 7,
+  });
 
   // Demo 2: User preferences object
   const {
@@ -31,15 +31,19 @@ function Demo() {
     setValue: setUserPrefs,
     deleteValue: resetUserPrefs,
     error: prefsError,
-    errorMessage: prefsErrorMessage
-  } = useCookieState<UserPreferences>('user_preferences', {
-    theme: 'light',
-    language: 'en',
-    notifications: true
-  }, {
-    defaultDomain: '.myapp.com',
-    days: 365
-  })
+    errorMessage: prefsErrorMessage,
+  } = useCookieState<UserPreferences>(
+    "user_preferences",
+    {
+      theme: "light",
+      language: "en",
+      notifications: true,
+    },
+    {
+      defaultDomain: "cookie-state.vercel.app",
+      days: 365,
+    }
+  );
 
   // Demo 3: Shopping cart simulation
   const {
@@ -47,11 +51,11 @@ function Demo() {
     setValue: setCart,
     deleteValue: clearCart,
     error: cartError,
-    errorMessage: cartErrorMessage
-  } = useCookieState<CartItem[]>('shopping_cart', [], {
-    defaultDomain: '.shop.com',
-    days: 30
-  })
+    errorMessage: cartErrorMessage,
+  } = useCookieState<CartItem[]>("shopping_cart", [], {
+    defaultDomain: "cookie-state.vercel.app",
+    days: 30,
+  });
 
   // Local state for adding items to cart
   const [newItem, setNewItem] = useState<string>('')

@@ -1,17 +1,24 @@
 {
   "name": "cookie-state",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A minimal React library for state management using cookies",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:lib": "tsc && vite build --mode lib",
+    "build:lib": "vite build --mode lib",
     "preview": "vite preview",
     "deploy": "npm run build && npx gh-pages -d dist",
     "prepublishOnly": "npm run build:lib"
