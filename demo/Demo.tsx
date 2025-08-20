@@ -75,6 +75,21 @@ function Demo() {
     <div className="container">
       <h1>🍪 Cookie State Demo</h1>
       
+      <div style={{textAlign: 'center', marginBottom: '2rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px'}}>
+        <p style={{margin: '0.5rem 0', color: '#6c757d'}}>
+          Built by <strong>d-arken</strong> • 
+          <a href="https://github.com/d-arken/cookie-state" target="_blank" rel="noopener noreferrer" style={{marginLeft: '0.5rem', color: '#4299e1'}}>
+            View on GitHub ⭐
+          </a> • 
+          <a href="https://www.npmjs.com/package/cookie-state" target="_blank" rel="noopener noreferrer" style={{marginLeft: '0.5rem', color: '#4299e1'}}>
+            npm package 📦
+          </a>
+        </p>
+        <p style={{margin: '0.5rem 0', fontSize: '0.9rem', color: '#868e96'}}>
+          A TypeScript-first React library for smart cross-domain cookie state management
+        </p>
+      </div>
+      
       {/* Demo 1: Counter */}
       <div className="demo-section">
         <h3>📊 Simple Counter with Custom Domain</h3>
