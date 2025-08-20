@@ -73,7 +73,9 @@ function Demo() {
 
   return (
     <div className="container">
-      <h1>🍪 Cookie State Demo</h1>
+      <header>
+        <h1>🍪 Cookie State Demo</h1>
+      </header>
       
       <div style={{textAlign: 'center', marginBottom: '2rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px'}}>
         <p style={{margin: '0.5rem 0', color: '#6c757d'}}>
@@ -90,9 +92,10 @@ function Demo() {
         </p>
       </div>
       
-      {/* Demo 1: Counter */}
-      <div className="demo-section">
-        <h3>📊 Simple Counter with Custom Domain</h3>
+      <main>
+        {/* Demo 1: Counter */}
+        <section className="demo-section">
+          <h2>📊 Simple Counter with Custom Domain</h2>
         <p>Domain: <code>.example.com</code> | Expires: 7 days</p>
         
         <div className="value-display">
@@ -117,11 +120,11 @@ function Demo() {
             Error: {countErrorMessage}
           </div>
         )}
-      </div>
+        </section>
 
-      {/* Demo 2: User Preferences */}
-      <div className="demo-section">
-        <h3>⚙️ User Preferences Object</h3>
+        {/* Demo 2: User Preferences */}
+        <section className="demo-section">
+          <h2>⚙️ User Preferences Object</h2>
         <p>Domain: <code>.myapp.com</code> | Expires: 365 days</p>
         
         <div className="value-display">
@@ -155,11 +158,11 @@ function Demo() {
             Error: {prefsErrorMessage}
           </div>
         )}
-      </div>
+        </section>
 
-      {/* Demo 3: Shopping Cart */}
-      <div className="demo-section">
-        <h3>🛒 Shopping Cart Simulation</h3>
+        {/* Demo 3: Shopping Cart */}
+        <section className="demo-section">
+          <h2>🛒 Shopping Cart Simulation</h2>
         <p>Domain: <code>.shop.com</code> | Expires: 30 days</p>
         
         <div className="value-display">
@@ -204,11 +207,11 @@ function Demo() {
             Error: {cartErrorMessage}
           </div>
         )}
-      </div>
+        </section>
 
-      {/* Instructions */}
-      <div className="demo-section">
-        <h3>🧪 How to Test</h3>
+        {/* Instructions */}
+        <section className="demo-section">
+          <h2>🧪 How to Test</h2>
         <ol style={{lineHeight: '1.6'}}>
           <li>Interact with the controls above to modify cookie values</li>
           <li>Open browser DevTools → Application → Cookies to see stored cookies</li>
@@ -217,8 +220,8 @@ function Demo() {
           <li>Notice how existing cookie values are preserved across page loads</li>
         </ol>
         
-        <h4>🌐 Cross-Domain Magic</h4>
-        <p>This library intelligently handles cross-domain cookies:</p>
+        <h4>🌐 How to Share State Across Subdomains with React</h4>
+        <p>This library solves the common problem of sharing state between subdomains in React applications:</p>
         <div className="value-display">
 {`// Smart cookie reuse example:
 
@@ -239,19 +242,39 @@ const { value } = useCookieState('user_prefs', { theme: 'dark' }, {
 // ✅ Perfect for cross-subdomain consistency`}
         </div>
         
-        <h4>🔧 Domain Configuration</h4>
-        <p>The hook requires a <code>domain</code> parameter:</p>
+        <h4>🏪 Why Cookies vs localStorage for Cross-Domain State?</h4>
         <div className="value-display">
-{`// Example usage
+{`❌ localStorage - Domain-specific, can't share between subdomains
+❌ sessionStorage - Lost on tab close, domain-specific  
+❌ React state - Lost on page refresh
+✅ Cookies with correct domain - Shared across all subdomains!
+
+// localStorage limitation:
+localStorage.setItem('theme', 'dark'); // Only works on current subdomain
+
+// cookie-state solution:
+const { value, setValue } = useCookieState('theme', 'light', {
+  domain: '.example.com' // Available on ALL *.example.com subdomains!
+});`}
+        </div>
+        
+        <h4>🔧 How to Persist State on Browser with React</h4>
+        <p>The hook requires a <code>domain</code> parameter for cross-subdomain sharing:</p>
+        <div className="value-display">
+{`// Complete example for persisting state across subdomains
 const { value, setValue } = useCookieState('key', defaultValue, {
   domain: '.yourdomain.com',  // Required for cross-domain sharing
-  days: 30,
-  path: '/',
-  secure: true,
-  sameSite: 'Lax'
-})`}
+  days: 30,                   // How long to persist
+  path: '/',                  // Available on all paths
+  secure: true,               // HTTPS only
+  sameSite: 'Lax'            // CSRF protection
+});
+
+// Works on: app.yourdomain.com, admin.yourdomain.com, www.yourdomain.com
+// Persists through: page refresh, browser restart, tab close`}
         </div>
-      </div>
+      </section>
+      </main>
     </div>
   )
 }
