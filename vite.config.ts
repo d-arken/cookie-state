@@ -18,20 +18,25 @@ export default defineConfig(({ command, mode }) => {
         })
       ],
       build: {
+        target: 'es2015', // Better compatibility with older environments
         lib: {
           entry: resolve(__dirname, 'src/index.ts'),
           name: 'CookieState',
-          formats: ['es', 'cjs'],
           fileName: (format) => `index.${format === 'es' ? 'es.js' : 'js'}`
         },
         rollupOptions: {
           external: ['react', 'react-dom'],
-          output: {
-            globals: {
-              react: 'React',
-              'react-dom': 'ReactDOM'
+          output: [
+            {
+              format: 'es',
+              entryFileNames: 'index.es.js',
+            },
+            {
+              format: 'cjs',
+              entryFileNames: 'index.js',
+              exports: 'auto', // Better CommonJS compatibility
             }
-          }
+          ]
         }
       }
     }

@@ -1,6 +1,6 @@
 {
   "name": "cookie-state",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A minimal React library for state management using cookies",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -9,8 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.es.js",
-      "require": "./dist/index.js"
-    }
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
@@ -32,6 +34,9 @@
   ],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
