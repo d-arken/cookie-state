@@ -21,7 +21,7 @@ function Demo() {
     error: countError,
     errorMessage: countErrorMessage,
   } = useCookieState<number>("demo_count", 0, {
-    defaultDomain: "cookie-state.vercel.app",
+    domain: "cookie-state.vercel.app",
     days: 7,
   });
 
@@ -40,7 +40,7 @@ function Demo() {
       notifications: true,
     },
     {
-      defaultDomain: "cookie-state.vercel.app",
+      domain: "cookie-state.vercel.app",
       days: 365,
     }
   );
@@ -53,7 +53,7 @@ function Demo() {
     error: cartError,
     errorMessage: cartErrorMessage,
   } = useCookieState<CartItem[]>("shopping_cart", [], {
-    defaultDomain: "cookie-state.vercel.app",
+    domain: "cookie-state.vercel.app",
     days: 30,
   });
 

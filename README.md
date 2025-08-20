@@ -34,7 +34,7 @@ interface UserPreferences {
 function MyComponent() {
   // Simple counter with TypeScript support
   const { value: count, setValue: setCount, deleteValue: removeCount } = useCookieState<number>('count', 0, {
-    defaultDomain: '.example.com', // custom domain for production
+    domain: '.example.com', // required: domain for cookie sharing
     days: 7, // expires in 7 days
     path: '/',
     sameSite: 'lax'
@@ -46,7 +46,7 @@ function MyComponent() {
     language: 'en', 
     notifications: true
   }, {
-    defaultDomain: '.example.com',
+    domain: '.example.com', // required domain
     days: 365
   })
 
@@ -94,9 +94,8 @@ interface UseCookieStateResult<T> {
 
 ```typescript
 interface CookieOptions {
+  domain: string                         // Required: Cookie domain for sharing across subdomains
   days?: number                          // Expiration in days (default: 365)
-  defaultDomain?: string                 // Default domain for production (default: undefined)  
-  domain?: string                        // Cookie domain (default: auto-determined)
   path?: string                          // Cookie path (default: '/')
   secure?: boolean                       // Secure flag (default: auto-detect based on protocol)
   sameSite?: 'strict' | 'lax' | 'none'   // SameSite attribute (default: 'lax')
@@ -106,10 +105,40 @@ interface CookieOptions {
 ### Key Features
 
 - **🔒 Type Safe**: Full TypeScript support with generic types
-- **🍪 Cross-Domain**: Configurable domain support for subdomain sharing  
+- **🍪 Cross-Domain**: Required domain configuration for explicit subdomain sharing  
 - **⚡ Function-Only Updates**: Safe state updates that prevent accidental overwrites
 - **🛡️ Error Handling**: Built-in error detection and reporting
 - **🔄 SSR Compatible**: Safe for server-side rendering environments
+
+### 🚨 Breaking Changes & Compatibility
+
+#### v0.0.4+ - Required Domain
+- **`domain` is now required**: Previously optional `defaultDomain` has been replaced with required `domain` parameter
+- **Simpler API**: No more conditional logic - you must explicitly specify the domain for cross-subdomain cookie sharing
+
+```typescript
+// ❌ Old API (v0.0.3 and below)
+useCookieState('key', defaultValue, { defaultDomain: '.example.com' })
+
+// ✅ New API (v0.0.4+)
+useCookieState('key', defaultValue, { domain: '.example.com' })
+```
+
+#### v0.0.5+ - Legacy Environment Support
+- **✅ React 16 + Node 10 Compatible**: Fixed `TypeError: is not a function` in older environments
+- **✅ Better CommonJS Support**: Improved export structure for older bundlers
+
+```javascript
+// Both import styles work in older environments:
+
+// ES6 import (modern)
+import { useCookieState } from 'cookie-state'
+
+// CommonJS require (legacy)
+const { useCookieState } = require('cookie-state')
+// or
+const useCookieState = require('cookie-state').useCookieState
+```
 
 ## Development
 
