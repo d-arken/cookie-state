@@ -110,24 +110,6 @@ interface CookieOptions {
 - **🛡️ Error Handling**: Built-in error detection and reporting
 - **🔄 SSR Compatible**: Safe for server-side rendering environments
 
-### 🚨 Breaking Changes & Compatibility
-
-#### v0.0.4+ - Required Domain
-- **`domain` is now required**: Previously optional `defaultDomain` has been replaced with required `domain` parameter
-- **Simpler API**: No more conditional logic - you must explicitly specify the domain for cross-subdomain cookie sharing
-
-```typescript
-// ❌ Old API (v0.0.3 and below)
-useCookieState('key', defaultValue, { defaultDomain: '.example.com' })
-
-// ✅ New API (v0.0.4+)
-useCookieState('key', defaultValue, { domain: '.example.com' })
-```
-
-#### v0.0.5+ - Legacy Environment Support
-- **✅ React 16 + Node 10 Compatible**: Fixed `TypeError: is not a function` in older environments
-- **✅ Better CommonJS Support**: Improved export structure for older bundlers
-
 ```javascript
 // Both import styles work in older environments:
 
