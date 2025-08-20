@@ -2,8 +2,7 @@ import { useState, useCallback } from "react";
 
 export interface CookieOptions {
   days?: number;
-  domain?: string;
-  defaultDomain?: string;
+  domain: string;
   path?: string;
   secure?: boolean;
   sameSite?: 'strict' | 'lax' | 'none';
@@ -38,18 +37,16 @@ const getCookie = (name: string): string | null => {
 /**
  * Set a cookie with the specified name, value, and options
  */
-const setCookie = (name: string, value: string, options: CookieOptions = {}): void => {
+const setCookie = (name: string, value: string, options: CookieOptions): void => {
   if (typeof document === "undefined") return;
-
-  const isDevelopment = process.env.NODE_ENV === "development";
 
   const {
     days = 365,
-    domain = isDevelopment ? undefined : options.defaultDomain, // Don't set domain for localhost
+    domain = undefined, // Don't set domain for localhost
     path = "/",
     secure = window.location.protocol === "https:",
     sameSite = "Lax",
-  } = options;
+  } = options || {};
 
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -73,15 +70,13 @@ const setCookie = (name: string, value: string, options: CookieOptions = {}): vo
 /**
  * Delete a cookie by setting it to expire in the past
  */
-const deleteCookie = (name: string, options: CookieOptions = {}): void => {
+const deleteCookie = (name: string, options: CookieOptions): void => {
   if (typeof document === "undefined") return;
 
-  const isDevelopment = process.env.NODE_ENV === "development";
-
   const {
-    domain = isDevelopment ? undefined : options.defaultDomain, // Don't set domain for localhost
+    domain = undefined, // Don't set domain for localhost
     path = "/",
-  } = options;
+  } = options || {};
 
   let cookieString = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}`;
 
@@ -125,8 +120,7 @@ const deleteCookie = (name: string, options: CookieOptions = {}): void => {
 const useCookieState = <T = any>(
   cookieName: string,
   defaultValue: T,
-  cookieOptions: CookieOptions = {}
-): UseCookieStateResult<T> => {
+  cookieOptions: CookieOptions): UseCookieStateResult<T> => {
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
