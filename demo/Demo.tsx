@@ -198,16 +198,38 @@ function Demo() {
           <li>Interact with the controls above to modify cookie values</li>
           <li>Open browser DevTools → Application → Cookies to see stored cookies</li>
           <li>Refresh the page to see values persist</li>
-          <li>Try different domains by modifying the <code>defaultDomain</code> prop</li>
-          <li>Note: In development, domains are ignored for localhost</li>
+          <li>Try opening this demo in different subdomains (if available) to test cross-domain sharing</li>
+          <li>Notice how existing cookie values are preserved across page loads</li>
         </ol>
         
+        <h4>🌐 Cross-Domain Magic</h4>
+        <p>This library intelligently handles cross-domain cookies:</p>
+        <div className="value-display">
+{`// Smart cookie reuse example:
+
+// First subdomain sets a cookie
+const { value } = useCookieState('user_prefs', { theme: 'light' }, { 
+  domain: '.example.com' 
+})
+// Result: { theme: 'light' }
+
+// Second subdomain with different default
+const { value } = useCookieState('user_prefs', { theme: 'dark' }, { 
+  domain: '.example.com' 
+}) 
+// Result: { theme: 'light' } <- Uses existing cookie, ignores default!
+
+// ✅ Existing cookies are always preserved
+// ✅ Defaults only apply when no cookie exists
+// ✅ Perfect for cross-subdomain consistency`}
+        </div>
+        
         <h4>🔧 Domain Configuration</h4>
-        <p>The hook accepts a <code>defaultDomain</code> prop:</p>
+        <p>The hook requires a <code>domain</code> parameter:</p>
         <div className="value-display">
 {`// Example usage
 const { value, setValue } = useCookieState('key', defaultValue, {
-  defaultDomain: '.yourdomain.com',
+  domain: '.yourdomain.com',  // Required for cross-domain sharing
   days: 30,
   path: '/',
   secure: true,

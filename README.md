@@ -105,22 +105,29 @@ interface CookieOptions {
 ### Key Features
 
 - **🔒 Type Safe**: Full TypeScript support with generic types
-- **🍪 Cross-Domain**: Required domain configuration for explicit subdomain sharing  
+- **🍪 Cross-Domain**: Smart cookie sharing that preserves existing values across subdomains  
 - **⚡ Function-Only Updates**: Safe state updates that prevent accidental overwrites
 - **🛡️ Error Handling**: Built-in error detection and reporting
 - **🔄 SSR Compatible**: Safe for server-side rendering environments
 
-```javascript
-// Both import styles work in older environments:
+### 🌐 Cross-Domain Behavior
 
-// ES6 import (modern)
-import { useCookieState } from 'cookie-state'
+The library intelligently handles cookies across subdomains:
 
-// CommonJS require (legacy)
-const { useCookieState } = require('cookie-state')
-// or
-const useCookieState = require('cookie-state').useCookieState
+```typescript
+// On app.example.com - First to set the cookie
+const { value } = useCookieState('user_prefs', { theme: 'light' }, { domain: '.example.com' })
+// Creates cookie with: { theme: 'light' }
+
+// On admin.example.com - Reuses existing cookie
+const { value } = useCookieState('user_prefs', { theme: 'dark' }, { domain: '.example.com' }) 
+// Gets existing value: { theme: 'light' } (NOT the default { theme: 'dark' })
 ```
+
+**✅ Smart Cookie Reuse:**
+- **Existing cookie**: Uses the current value (ignores default)
+- **No cookie**: Sets default value for all subdomains to share
+- **Parse error**: Resets to default value and saves to cookie
 
 ## Development
 

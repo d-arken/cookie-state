@@ -89,15 +89,20 @@ const deleteCookie = (name: string, options: CookieOptions): void => {
 };
 
 /**
- * React hook for storing and retrieving JSON objects in cookies with subdomain access
+ * React hook for storing and retrieving JSON objects in cookies with cross-domain access
  * Uses function-only updates for safe state management and property preservation
+ * 
+ * **Cross-Domain Behavior**: 
+ * - If a cookie already exists (set by another subdomain), it reuses that value
+ * - If no cookie exists, it sets the default value for all subdomains to access
+ * - This ensures consistent state across all subdomains using the same cookie key
  *
  * @example
  * // Basic usage with custom domain
  * const { value: uiData, setValue: setUiData, deleteValue: deleteUiData, error, errorMessage } = useCookieState(
  *   'ui_data', 
  *   { isSidebarOpen: true },
- *   { defaultDomain: '.oppizi.com' }
+ *   { domain: '.oppizi.com' }
  * )
  *
  * // Update specific properties (function-only updates)
@@ -129,20 +134,26 @@ const useCookieState = <T = any>(
     try {
       const cookieValue = getCookie(cookieName);
       if (cookieValue === null) {
+        // No existing cookie found - set the default value to maintain cross-domain consistency
+        const stringValue = encodeURIComponent(JSON.stringify(defaultValue));
+        setCookie(cookieName, stringValue, cookieOptions);
         return defaultValue;
       }
 
-      // Try to parse as JSON
+      // Existing cookie found - use it to maintain cross-domain state
       const parsed = JSON.parse(decodeURIComponent(cookieValue));
       return parsed;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       console.warn(`Error parsing cookie "${cookieName}":`, errorMessage);
+      // On parse error, set default value to cookie for consistency
+      const stringValue = encodeURIComponent(JSON.stringify(defaultValue));
+      setCookie(cookieName, stringValue, cookieOptions);
       return defaultValue;
     }
-  }, [cookieName, defaultValue]);
+  }, [cookieName, defaultValue, cookieOptions]);
 
-  // Initialize state with current cookie value
+  // Initialize state with current cookie value (and set cookie if it doesn't exist)
   const [value, setValue] = useState<T>(getInitialValue);
 
   // Function to get the current value from cookie (with error handling)
